@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Chemical Risk Analyzer | FSSAI & CDSCO Regulations</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- CSS Style Sheets -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i data-lucide="shield-alert"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>ChemRisk</h1>
+                    <span>India Advisor</span>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="dashboard">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-target="scan">
+                    <i data-lucide="scan"></i>
+                    <span>Scan Ingredients</span>
+                </a>
+                <a href="#" class="nav-item" data-target="products">
+                    <i data-lucide="package"></i>
+                    <span>Product Directory</span>
+                </a>
+                <a href="#" class="nav-item" data-target="chemicals">
+                    <i data-lucide="beaker"></i>
+                    <span>Chemical Registry</span>
+                </a>
+                <a href="#" class="nav-item" data-target="admin">
+                    <i data-lucide="sliders"></i>
+                    <span>Admin Controls</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="pulse-dot green"></span>
+                    <span>Regulatory DB Connected</span>
+                </div>
+                <div class="version-tag">v1.0.0 (FSSAI/CDSCO)</div>
+            </div>
+        </aside>
+
+        <!-- Main Body -->
+        <main class="main-content">
+            
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <header class="section-header">
+                    <div>
+                        <h2>Safety Dashboard</h2>
+                        <p>Real-time analytics of product ingredients scanned against Indian regulatory limits.</p>
+                    </div>
+                </header>
+                
+                <!-- Metric Row -->
+                <div class="metrics-grid">
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Total Products Analyzed</span>
+                            <div class="metric-icon blue"><i data-lucide="package"></i></div>
+                        </div>
+                        <div class="metric-value" id="stat-total-products">0</div>
+                        <p class="metric-desc">Scanned products saved in directory</p>
+                    </div>
+                    
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Average Safety Index</span>
+                            <div class="metric-icon" id="stat-safety-icon"><i data-lucide="heart-pulse"></i></div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value" id="stat-avg-score">100</div>
+                            <div class="metric-sub" id="stat-avg-grade">Grade A</div>
+                        </div>
+                        <p class="metric-desc">Mean score across all database products</p>
+                    </div>
+                    
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Regulated Substances</span>
+                            <div class="metric-icon orange"><i data-lucide="shield-ban"></i></div>
+                        </div>
+                        <div class="metric-value" id="stat-total-chemicals">0</div>
+                        <p class="metric-desc">Prohibited/Restricted rules seeded</p>
+                    </div>
+                </div>
+
+                <!-- Recent Activities Section -->
+                <div class="dashboard-details-grid">
+                    <div class="details-card glass">
+                        <h3><i data-lucide="history"></i> Recently Scanned Products</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Brand</th>
+                                        <th>Category</th>
+                                        <th>Safety Score</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-scans-table">
+                                    <tr>
+                                        <td colspan="5" class="empty-state">No products scanned yet. Go to Scan Ingredients!</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="details-card glass">
+                        <h3><i data-lucide="alert-triangle"></i> Flagged High-Risk Scans</h3>
+                        <div class="flagged-scans-list" id="high-risk-list">
+                            <div class="empty-state">No high-risk products found. All clear!</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scan Section -->
+            <section id="scan" class="content-section">
+                <header class="section-header">
+                    <div>
+                        <h2>Ingredient Scanner</h2>
+                        <p>Paste product label ingredient lists to instantly verify compliance with FSSAI (Food) and CDSCO (Cosmetic) rules.</p>
+                    </div>
+                </header>
+                
+                <div class="scan-grid">
+                    <!-- Scan Input Panel -->
+                    <div class="scan-card glass">
+                        <h3><i data-lucide="clipboard-list"></i> Paste Ingredients Label</h3>
+                        <form id="scan-form" class="scan-form">
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label for="scan-name">Product Name <span class="optional">(Optional)</span></label>
+                                    <input type="text" id="scan-name" placeholder="e.g. Premium Brown Bread">
+                                </div>
+                                <div class="form-group">
+                                    <label for="scan-brand">Brand / Manufacturer <span class="optional">(Optional)</span></label>
+                                    <input type="text" id="scan-brand" placeholder="e.g. Harvest Bakery">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="scan-category">Regulatory Category</label>
+                                <select id="scan-category" required>
+                                    <option value="Food">Food & Beverages (FSSAI Regulated)</option>
+                                    <option value="Cosmetics">Cosmetics & Makeup (CDSCO Regulated)</option>
+                                    <option value="Personal Care">Personal Care & Hygiene (CDSCO Regulated)</option>
+                                    <option value="Household">Household & Cleaners</option>
+                                    <option value="Other">General / Other Category</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="scan-ingredients">Ingredients List</label>
+                                <textarea id="scan-ingredients" placeholder="Paste raw ingredients list here. E.g. Wheat Flour, Sugar, Potassium Bromate E924, Yeast, Preservative (Sodium Benzoate)..." required></textarea>
+                            </div>
+
+                            <div class="preset-buttons">
+                                <span class="preset-label">Load Demo Label:</span>
+                                <button type="button" class="btn-preset" data-type="bread">🍞 Atta Bread (FSSAI Violations)</button>
+                                <button type="button" class="btn-preset" data-type="cream">🧴 Face Cream (CDSCO Violations)</button>
+                                <button type="button" class="btn-preset" data-type="safe">🍎 Organic Oats (Clean Label)</button>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="btn-submit-scan">
+                                    <i data-lucide="scan-line"></i> Run Safety Analysis
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Scan Results Panel -->
+                    <div class="scan-results-container">
+                        <div class="scan-card glass init-state" id="results-empty-state">
+                            <div class="result-placeholder">
+                                <i data-lucide="beaker"></i>
+                                <h4>Awaiting Input</h4>
+                                <p>Fill in the product details and hit "Run Safety Analysis" to view risk profiling and safety ratings.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="scan-card glass results-active" id="results-card" style="display: none;">
+                            <div class="results-top-header">
+                                <div>
+                                    <h3 id="result-product-title">Product Name</h3>
+                                    <span id="result-product-meta">Brand | Category</span>
+                                </div>
+                                <div class="grade-badge" id="result-grade">A</div>
+                            </div>
+                            
+                            <div class="score-summary-bar">
+                                <div class="gauge-outer">
+                                    <svg class="gauge-svg" viewBox="0 0 100 100">
+                                        <circle class="gauge-bg" cx="50" cy="50" r="40" />
+                                        <circle class="gauge-fill" id="result-gauge-fill" cx="50" cy="50" r="40" stroke-dasharray="251" stroke-dashoffset="0" />
+                                    </svg>
+                                    <div class="gauge-text" id="result-score-text">100</div>
+                                </div>
+                                <div class="score-description">
+                                    <h4 id="result-summary-title">Safe Product</h4>
+                                    <p id="result-summary-desc">No prohibited or restricted chemicals detected.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="hazard-counts-strip">
+                                <span class="count-badge red"><strong id="count-high">0</strong> Prohibited</span>
+                                <span class="count-badge orange"><strong id="count-med">0</strong> Restricted</span>
+                                <span class="count-badge yellow"><strong id="count-low">0</strong> Minor Warning</span>
+                            </div>
+                            
+                            <!-- Dangerous Chemicals Matches -->
+                            <div class="results-section" id="matched-chemicals-section">
+                                <h4><i data-lucide="shield-x"></i> Regulated Chemicals Detected</h4>
+                                <div class="matched-chemical-cards" id="matched-chemicals-list">
+                                    <!-- Cards dynamically generated here -->
+                                </div>
+                            </div>
+
+                            <!-- Unmatched Ingredients List -->
+                            <div class="results-section">
+                                <h4><i data-lucide="check-circle"></i> Other Ingredients (Checked)</h4>
+                                <div class="ingredient-tags" id="unmatched-ingredients-list">
+                                    <!-- Tags dynamically generated here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Save Actions -->
+                            <div class="results-actions">
+                                <button class="btn btn-secondary" id="btn-save-product"><i data-lucide="save"></i> Save Scan to Directory</button>
+                                <button class="btn btn-outline" id="btn-reset-scan"><i data-lucide="refresh-cw"></i> Clear Scan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Product Directory Section -->
+            <section id="products" class="content-section">
+                <header class="section-header">
+                    <div>
+                        <h2>Product Directory</h2>
+                        <p>Browse previously scanned products, their chemical risk ratings, and detailed analysis reports.</p>
+                    </div>
+                </header>
+                
+                <div class="search-filter-bar glass">
+                    <div class="search-box">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="product-search-input" placeholder="Search by product name, brand, or ingredient...">
+                    </div>
+                    <div class="filter-box">
+                        <label for="product-category-filter">Category:</label>
+                        <select id="product-category-filter">
+                            <option value="All">All Categories</option>
+                            <option value="Food">Food & Beverages</option>
+                            <option value="Cosmetics">Cosmetics</option>
+                            <option value="Personal Care">Personal Care</option>
+                            <option value="Household">Household</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="products-grid" id="product-list-grid">
+                    <!-- Cards will be populated dynamically -->
+                </div>
+            </section>
+
+            <!-- Chemical Registry Section -->
+            <section id="chemicals" class="content-section">
+                <header class="section-header">
+                    <div>
+                        <h2>Banned & Regulated Chemical Registry</h2>
+                        <p>Search official FSSAI prohibited additives and CDSCO restricted ingredients based on Indian Gazette notifications.</p>
+                    </div>
+                </header>
+                
+                <div class="search-filter-bar glass">
+                    <div class="search-box">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="chemical-search-input" placeholder="Search by chemical name, E-number, CAS number, or health effect...">
+                    </div>
+                </div>
+                
+                <div class="chemicals-registry-grid" id="chemical-registry-list">
+                    <!-- Chemical registry cards populated dynamically -->
+                </div>
+            </section>
+
+            <!-- Admin Section -->
+            <section id="admin" class="content-section">
+                <header class="section-header">
+                    <div>
+                        <h2>System Administrator Panel</h2>
+                        <p>Manage data seeding, add custom regulatory chemical limits, and control backend functions.</p>
+                    </div>
+                </header>
+                
+                <div class="admin-grid">
+                    <!-- Add Chemical Form -->
+                    <div class="admin-card glass">
+                        <h3><i data-lucide="plus-circle"></i> Add Regulated Substance</h3>
+                        <form id="add-chemical-form" class="admin-form">
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label for="chem-name">Chemical/Ingredient Name</label>
+                                    <input type="text" id="chem-name" placeholder="e.g. Potassium Bromate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="chem-cas">CAS RN Number <span class="optional">(Optional)</span></label>
+                                    <input type="text" id="chem-cas" placeholder="e.g. 7758-01-2">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label for="chem-category">Applicable Category</label>
+                                    <select id="chem-category" required>
+                                        <option value="Food">Food Additive</option>
+                                        <option value="Cosmetics">Cosmetic Ingredient</option>
+                                        <option value="General">General / All-Purpose</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="chem-status">Regulatory Status</label>
+                                    <select id="chem-status" required>
+                                        <option value="Prohibited">Prohibited / Banned</option>
+                                        <option value="Restricted">Restricted (Permitted with limits)</option>
+                                        <option value="Permitted">Permitted with Warnings</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row-3">
+                                <div class="form-group">
+                                    <label for="chem-body">Regulatory Body</label>
+                                    <select id="chem-body" required>
+                                        <option value="FSSAI">FSSAI (Food Authority)</option>
+                                        <option value="CDSCO">CDSCO (Drug Control)</option>
+                                        <option value="General">General Indian Standards</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="chem-risk">Risk Level Rating</label>
+                                    <select id="chem-risk" required>
+                                        <option value="High">High Risk (Danger)</option>
+                                        <option value="Medium">Medium Risk (Warning)</option>
+                                        <option value="Low">Low Risk (Caution)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="chem-limit">Regulatory Limit <span class="optional">(Optional)</span></label>
+                                    <input type="text" id="chem-limit" placeholder="e.g. Max 2.0% or Max 600 ppm">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="chem-synonyms">Synonyms / Codes <span class="optional">(Comma separated)</span></label>
+                                <input type="text" id="chem-synonyms" placeholder="e.g. E924, E-924, bromate flour">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="chem-hazards">Health Risks & Side Effects</label>
+                                <textarea id="chem-hazards" placeholder="e.g. Genotoxic carcinogen, cellular oxidative damage, nephrotoxicity." required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="chem-description">Chemical Description</label>
+                                <textarea id="chem-description" placeholder="Provide general details on how this chemical is used in products..." required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="chem-source">Official Reference Link <span class="optional">(Optional)</span></label>
+                                <input type="url" id="chem-source" placeholder="https://fssai.gov.in/...">
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Save Chemical Registry Rule</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Seeding and Maintenance Panel -->
+                    <div class="admin-card glass layout-maintenance">
+                        <h3><i data-lucide="wrench"></i> Database Maintenance</h3>
+                        <div class="maintenance-item">
+                            <h4>Re-seed Database</h4>
+                            <p>Warning: This deletes all user scans, custom chemicals, and resets the database back to standard official FSSAI/CDSCO guidelines.</p>
+                            <button class="btn btn-danger" id="btn-db-seed"><i data-lucide="database"></i> Delete & Re-Seed Database</button>
+                        </div>
+                        
+                        <div class="maintenance-item spacer">
+                            <h4>Database Statistics</h4>
+                            <div class="mini-stats-grid">
+                                <div class="mini-stat">
+                                    <span>Food Rules</span>
+                                    <strong id="mini-stat-food">0</strong>
+                                </div>
+                                <div class="mini-stat">
+                                    <span>Cosmetic Rules</span>
+                                    <strong id="mini-stat-cosmetic">0</strong>
+                                </div>
+                                <div class="mini-stat">
+                                    <span>User Products</span>
+                                    <strong id="mini-stat-user">0</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">
+        <span id="toast-message">Notification message here</span>
+    </div>
+
+    <!-- App Frontend Logic -->
+    <script src="/js/app.js"></script>
+</body>
+</html>
