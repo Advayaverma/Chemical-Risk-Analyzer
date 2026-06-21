@@ -17,7 +17,25 @@ class ChemicalBase(BaseModel):
     source_url: Optional[str] = None
 
 class ChemicalCreate(ChemicalBase):
-    pass
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "name": "BHA (Butylated Hydroxyanisole)",
+                    "cas_number": "25013-16-5",
+                    "synonyms": "E320, E-320",
+                    "category": "Food",
+                    "regulatory_status": "Restricted",
+                    "regulatory_body": "FSSAI",
+                    "risk_level": "Medium",
+                    "health_risks": "Endocrine disruptor, estrogenic mimic, anticipated human carcinogen.",
+                    "regulatory_limit": "Max 200 ppm in fats/oils.",
+                    "description": "A synthetic antioxidant used to preserve fats and oils in food.",
+                    "source_url": "https://www.fssai.gov.in/"
+                }
+            ]
+        }
+    }
 
 class ChemicalResponse(ChemicalBase):
     id: int
@@ -34,7 +52,24 @@ class ProductBase(BaseModel):
     ingredients_text: str
 
 class ProductCreate(ProductBase):
-    pass
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "name": "Atta White Sandwich Bread",
+                    "brand": "Britannia Premium",
+                    "category": "Food",
+                    "ingredients_text": "Wheat Flour (Atta 60%), Maida, Sugar, Yeast, Iodized Salt, Preservative (Sodium Benzoate E211), Flour Treatment Agent (Potassium Bromate E924)"
+                },
+                {
+                    "name": "Daily Brightness Glow Cream",
+                    "brand": "Fair Glow",
+                    "category": "Cosmetics",
+                    "ingredients_text": "Water, Palmitic Acid, Stearic Acid, Niacinamide, Glycerin, Preservative (Isopropylparaben), Methylparaben, Perfume"
+                }
+            ]
+        }
+    }
 
 class ProductResponse(ProductBase):
     id: int
@@ -56,6 +91,25 @@ class AnalysisRequest(BaseModel):
     brand: Optional[str] = None
     category: str  # "Food", "Cosmetics", "Personal Care", "Household", "Other"
     ingredients_text: str
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "name": "Atta White Sandwich Bread",
+                    "brand": "Britannia Premium",
+                    "category": "Food",
+                    "ingredients_text": "Wheat Flour (Atta 60%), Maida, Sugar, Yeast, Iodized Salt, Preservative (Sodium Benzoate E211), Flour Treatment Agent (Potassium Bromate E924)"
+                },
+                {
+                    "name": "Daily Brightness Glow Cream",
+                    "brand": "Fair Glow",
+                    "category": "Cosmetics",
+                    "ingredients_text": "Water, Palmitic Acid, Stearic Acid, Niacinamide, Glycerin, Preservative (Isopropylparaben), Methylparaben, Perfume"
+                }
+            ]
+        }
+    }
 
 class AnalysisResponse(BaseModel):
     product_name: Optional[str] = None

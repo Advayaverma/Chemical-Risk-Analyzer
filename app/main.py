@@ -124,7 +124,24 @@ def analyze_ingredients(request: schemas.AnalysisRequest, db: Session = Depends(
 
 @app.get("/api/chemicals", response_model=List[schemas.ChemicalResponse])
 def read_chemicals(
-    search: Optional[str] = Query(None, description="Search by name, synonyms, CAS number, or hazards"),
+    search: Optional[str] = Query(
+        None,
+        description="Search by name, synonyms, CAS number, or hazards",
+        openapi_examples={
+            "search_by_name": {
+                "summary": "Chemical name example",
+                "value": "Potassium Bromate"
+            },
+            "search_by_cas": {
+                "summary": "CAS number example",
+                "value": "7758-01-2"
+            },
+            "search_by_synonym": {
+                "summary": "E-number / Synonym example",
+                "value": "E211"
+            }
+        }
+    ),
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db)
@@ -156,8 +173,34 @@ def delete_chemical(chemical_id: int, db: Session = Depends(get_db)):
 
 @app.get("/api/products", response_model=List[schemas.ProductResponse])
 def read_products(
-    search: Optional[str] = Query(None, description="Search by name, brand, or ingredients"),
-    category: Optional[str] = Query(None, description="Filter products by category"),
+    search: Optional[str] = Query(
+        None,
+        description="Search by name, brand, or ingredients",
+        openapi_examples={
+            "search_by_brand": {
+                "summary": "Brand name example",
+                "value": "Britannia"
+            },
+            "search_by_product": {
+                "summary": "Product name example",
+                "value": "Atta White Sandwich Bread"
+            }
+        }
+    ),
+    category: Optional[str] = Query(
+        None,
+        description="Filter products by category",
+        openapi_examples={
+            "food_category": {
+                "summary": "Food products",
+                "value": "Food"
+            },
+            "cosmetic_category": {
+                "summary": "Cosmetics products",
+                "value": "Cosmetics"
+            }
+        }
+    ),
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db)
