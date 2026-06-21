@@ -605,6 +605,54 @@ textarea {
     font-weight: 600;
 }
 
+/* Catalog Auto-fill Lookup */
+.catalog-lookup {
+    background-color: rgba(99, 102, 241, 0.06);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+}
+
+.catalog-lookup > label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.catalog-lookup > label i {
+    width: 16px;
+    height: 16px;
+    color: var(--primary);
+}
+
+.catalog-lookup-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+
+.catalog-lookup-row input {
+    flex: 1 1 220px;
+    min-width: 0;
+}
+
+.catalog-lookup-row .btn {
+    white-space: nowrap;
+    flex: 0 0 auto;
+}
+
+.catalog-hint {
+    margin-top: 8px;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
 /* Scanner Layout Grid */
 .scan-grid {
     display: grid;

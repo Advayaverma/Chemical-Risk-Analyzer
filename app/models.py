@@ -28,3 +28,13 @@ class Product(Base):
     ingredients_text = Column(Text, nullable=False)  # Raw ingredients list text
     risk_score = Column(Integer, default=100)  # Dynamic or saved overall risk score
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+class CatalogProduct(Base):
+    """Reference catalog mapping known product names to their chemical ingredient lists."""
+    __tablename__ = "catalog_products"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True, nullable=False)
+    brand = Column(String, index=True, nullable=True)
+    category = Column(String, nullable=False)  # "Food", "Cosmetics", "Personal Care", "Household", "Other"
+    ingredients_text = Column(Text, nullable=False)  # Known ingredients list for this product

@@ -91,3 +91,48 @@ def delete_product(db: Session, product_id: int):
         db.commit()
         return True
     return False
+
+
+# --- Catalog CRUD ---
+def get_catalog_products(db: Session, skip: int = 0, limit: int = 100, search: str = None, category: str = None):
+    query = db.query(models.CatalogProduct)
+    if category and category != "All":
+        query = query.filter(models.CatalogProduct.category.ilike(category))
+    if search:
+        search_filter = f"%{search}%"
+        query = query.filter(
+            or_(
+                models.CatalogProduct.name.ilike(search_filter),
+                models.CatalogProduct.brand.ilike(search_filter)
+            )
+        )
+    return query.order_by(models.CatalogProduct.name.asc()).offset(skip).limit(limit).all()
+
+def get_catalog_product_by_name(db: Session, name: str):
+    """Look up a catalog product by name. Tries exact (case-insensitive) match first, then a contains match."""
+    if not name:
+        return None
+    name = name.strip()
+    exact = db.query(models.CatalogProduct).filter(models.CatalogProduct.name.ilike(name)).first()
+    if exact:
+        return exact
+    return db.query(models.CatalogProduct).filter(
+        models.CatalogProduct.name.ilike(f"%{name}%")
+    ).order_by(models.CatalogProduct.name.asc()).first()
+
+def get_catalog_product_by_name_exact(db: Session, name: str):
+    if not name:
+        return None
+    return db.query(models.CatalogProduct).filter(models.CatalogProduct.name.ilike(name.strip())).first()
+
+def create_catalog_product(db: Session, product: schemas.CatalogProductCreate):
+    db_product = models.CatalogProduct(
+        name=product.name,
+        brand=product.brand,
+        category=product.category,
+        ingredients_text=product.ingredients_text
+    )
+    db.add(db_product)
+    db.commit()
+    db.refresh(db_product)
+    return db_product

@@ -80,6 +80,34 @@ class ProductResponse(ProductBase):
         orm_mode = True
         from_attributes = True
 
+# --- Catalog Schemas ---
+class CatalogProductBase(BaseModel):
+    name: str
+    brand: Optional[str] = None
+    category: str
+    ingredients_text: str
+
+class CatalogProductCreate(CatalogProductBase):
+    pass
+
+class CatalogProductResponse(CatalogProductBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+        from_attributes = True
+
+class CatalogSuggestion(BaseModel):
+    """Lightweight catalog entry used for product-name autocomplete."""
+    id: int
+    name: str
+    brand: Optional[str] = None
+    category: str
+
+    class Config:
+        orm_mode = True
+        from_attributes = True
+
 # --- Analysis Schemas ---
 class IngredientAnalysisDetail(BaseModel):
     ingredient_raw: str

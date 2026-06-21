@@ -122,6 +122,50 @@ def analyze_ingredients(request: schemas.AnalysisRequest, db: Session = Depends(
         low_risk_count=analysis["low_risk_count"]
     )
 
+@app.get("/api/catalog", response_model=List[schemas.CatalogSuggestion])
+def search_catalog(
+    search: Optional[str] = Query(
+        None,
+        description="Search the product catalog by product name or brand",
+        openapi_examples={
+            "by_name": {"summary": "Product name example", "value": "Maggi"},
+            "by_brand": {"summary": "Brand example", "value": "Britannia"}
+        }
+    ),
+    category: Optional[str] = Query(None, description="Filter catalog products by category"),
+    limit: int = 20,
+    db: Session = Depends(get_db)
+):
+    """
+    Searches the reference product catalog and returns lightweight name/brand suggestions
+    for autocomplete in the scan form.
+    """
+    return crud.get_catalog_products(db, limit=limit, search=search, category=category)
+
+@app.get("/api/catalog/lookup", response_model=schemas.CatalogProductResponse)
+def lookup_catalog_product(
+    name: str = Query(..., description="Exact or partial product name to fetch ingredients for"),
+    db: Session = Depends(get_db)
+):
+    """
+    Looks up a product by name in the reference catalog and returns its known
+    ingredient list (plus brand/category) so the scan form can be auto-filled.
+    """
+    product = crud.get_catalog_product_by_name(db, name)
+    if not product:
+        raise HTTPException(status_code=404, detail=f"No catalog product found matching '{name}'.")
+    return product
+
+@app.post("/api/catalog", response_model=schemas.CatalogProductResponse)
+def create_catalog_product(product: schemas.CatalogProductCreate, db: Session = Depends(get_db)):
+    """
+    Adds a new product (mapped to its ingredient list) to the reference catalog.
+    """
+    existing = crud.get_catalog_product_by_name_exact(db, product.name)
+    if existing:
+        raise HTTPException(status_code=400, detail=f"Catalog product '{product.name}' already exists.")
+    return crud.create_catalog_product(db, product)
+
 @app.get("/api/chemicals", response_model=List[schemas.ChemicalResponse])
 def read_chemicals(
     search: Optional[str] = Query(

@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupRouter();
     setupForms();
     setupPresets();
+    setupCatalogLookup();
     setupSearchFilters();
     loadDashboardStats();
     loadProducts();
@@ -206,6 +207,84 @@ function setupPresets() {
                 showToast(`Loaded preset demo ingredients for ${data.name}!`);
             }
         });
+    });
+}
+
+// --- Catalog Lookup (auto-fill ingredients from product database) ---
+function setupCatalogLookup() {
+    const input = document.getElementById('catalog-lookup-input');
+    const datalist = document.getElementById('catalog-suggestions');
+    const lookupBtn = document.getElementById('btn-catalog-lookup');
+    if (!input || !lookupBtn) return;
+
+    // Populate autocomplete suggestions as the user types
+    const refreshSuggestions = async () => {
+        const term = input.value.trim();
+        try {
+            const url = term
+                ? `${API_BASE}/catalog?search=${encodeURIComponent(term)}`
+                : `${API_BASE}/catalog`;
+            const response = await fetch(url);
+            if (!response.ok) return;
+            const items = await response.json();
+            datalist.innerHTML = items.map(p => {
+                const label = p.brand ? `${p.name} — ${p.brand}` : p.name;
+                return `<option value="${escapeHtml(p.name)}">${escapeHtml(label)}</option>`;
+            }).join('');
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    // Preload the full catalog once so the dropdown has options immediately
+    refreshSuggestions();
+    input.addEventListener('input', debounce(refreshSuggestions, 250));
+
+    const runLookup = async () => {
+        const name = input.value.trim();
+        if (!name) {
+            showToast("Type a product name to fetch its ingredients.", 'error');
+            return;
+        }
+
+        const origHtml = lookupBtn.innerHTML;
+        lookupBtn.disabled = true;
+        lookupBtn.innerHTML = `<i data-lucide="loader" class="spin"></i> Fetching...`;
+        lucide.createIcons();
+
+        try {
+            const response = await fetch(`${API_BASE}/catalog/lookup?name=${encodeURIComponent(name)}`);
+            if (response.status === 404) {
+                throw new Error(`No product matching "${name}" in the database.`);
+            }
+            if (!response.ok) throw new Error("Failed to look up product.");
+
+            const product = await response.json();
+
+            // Auto-fill the scan form from the catalog entry
+            document.getElementById('scan-name').value = product.name || '';
+            document.getElementById('scan-brand').value = product.brand || '';
+            if (product.category) {
+                document.getElementById('scan-category').value = product.category;
+            }
+            document.getElementById('scan-ingredients').value = product.ingredients_text || '';
+
+            showToast(`Ingredients auto-filled for "${product.name}".`);
+        } catch (err) {
+            showToast(err.message, 'error');
+        } finally {
+            lookupBtn.disabled = false;
+            lookupBtn.innerHTML = origHtml;
+            lucide.createIcons();
+        }
+    };
+
+    lookupBtn.addEventListener('click', runLookup);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            runLookup();
+        }
     });
 }
 

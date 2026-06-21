@@ -152,6 +152,22 @@
                     <div class="scan-card glass">
                         <h3><i data-lucide="clipboard-list"></i> Paste Ingredients Label</h3>
                         <form id="scan-form" class="scan-form">
+                            <div class="catalog-lookup">
+                                <label for="catalog-lookup-input">
+                                    <i data-lucide="database"></i> Auto-fill from Product Database
+                                    <span class="optional">(type a product name)</span>
+                                </label>
+                                <div class="catalog-lookup-row">
+                                    <input type="text" id="catalog-lookup-input" list="catalog-suggestions" autocomplete="off"
+                                        placeholder="e.g. Maggi Masala Noodles, Britannia Bread...">
+                                    <datalist id="catalog-suggestions"></datalist>
+                                    <button type="button" class="btn btn-secondary" id="btn-catalog-lookup">
+                                        <i data-lucide="download"></i> Fetch Ingredients
+                                    </button>
+                                </div>
+                                <p class="catalog-hint">Ingredients are extracted automatically from the product catalog.</p>
+                            </div>
+
                             <div class="form-row-2">
                                 <div class="form-group">
                                     <label for="scan-name">Product Name <span class="optional">(Optional)</span></label>

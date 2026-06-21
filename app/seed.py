@@ -267,6 +267,84 @@ INITIAL_PRODUCTS = [
     }
 ]
 
+# Reference catalog: known products mapped against their chemical ingredient lists.
+# Users pick/type a product name and the ingredients are auto-extracted from here.
+INITIAL_CATALOG = [
+    {
+        "name": "Atta White Sandwich Bread",
+        "brand": "Britannia Premium",
+        "category": "Food",
+        "ingredients_text": "Wheat Flour (Atta 60%), Refined Wheat Flour (Maida), Sugar, Yeast, Iodized Salt, Preservative (Sodium Benzoate E211), Flour Treatment Agent (Potassium Bromate E924), Gluten, Soya Flour, Water"
+    },
+    {
+        "name": "Masala Instant Noodles",
+        "brand": "Maggi",
+        "category": "Food",
+        "ingredients_text": "Refined Wheat Flour (Maida), Palm Oil, Iodized Salt, Wheat Gluten, Thickeners (508 & 412), Acidity Regulators (501 & 500), Humectant (451), Sugar, Spices, Flavour Enhancer (Monosodium Glutamate E621), Preservative (Sodium Benzoate)"
+    },
+    {
+        "name": "Diet Cola Soft Drink",
+        "brand": "Coca-Cola Zero",
+        "category": "Food",
+        "ingredients_text": "Carbonated Water, Caramel Colour (E150d), Acidity Regulators (Phosphoric Acid, Sodium Citrate), Sweeteners (Aspartame E951, Acesulfame Potassium E950), Preservative (Sodium Benzoate E211), Caffeine, Natural Flavours"
+    },
+    {
+        "name": "Spicy Mango Pickle",
+        "brand": "Mother's Recipe",
+        "category": "Food",
+        "ingredients_text": "Mango, Edible Vegetable Oil, Iodized Salt, Spices & Condiments, Acidity Regulator (Acetic Acid), Preservative (Sodium Benzoate E211)"
+    },
+    {
+        "name": "Natural Almond Honey Oats Muesli",
+        "brand": "Organic Harvest",
+        "category": "Food",
+        "ingredients_text": "Whole Grain Oats, Rolled Oats, Almonds, Honey, Chia Seeds, Real Vanilla Extract, Raisins, Pumpkin Seeds, Flax Seeds"
+    },
+    {
+        "name": "Classic Salted Potato Chips",
+        "brand": "Lay's",
+        "category": "Food",
+        "ingredients_text": "Potato, Edible Vegetable Oil (Palmolein), Iodized Salt, Antioxidants (BHA E320, BHT E321)"
+    },
+    {
+        "name": "Turmeric Powder",
+        "brand": "Everest",
+        "category": "Food",
+        "ingredients_text": "Turmeric, Permitted Colour (Metanil Yellow)"
+    },
+    {
+        "name": "Daily Brightness Glow Cream",
+        "brand": "Fair Glow",
+        "category": "Cosmetics",
+        "ingredients_text": "Water, Palmitic Acid, Stearic Acid, Niacinamide, Glycerin, Preservative (Isopropylparaben), Methylparaben, Perfume, Titanium Dioxide, Disodium EDTA"
+    },
+    {
+        "name": "Super Charcoal Face Polish",
+        "brand": "Nox Cleansing",
+        "category": "Cosmetics",
+        "ingredients_text": "Aqua, Charcoal Powder, Glycerin, Antibacterial Triclosan (0.3%), Preservative (Formaldehyde), Cellulose Gum, Fragrance, Benzyl Alcohol"
+    },
+    {
+        "name": "Dark Brown Permanent Hair Color",
+        "brand": "Glossy Lockes",
+        "category": "Cosmetics",
+        "ingredients_text": "Aqua, Cetearyl Alcohol, Ethanolamine, p-Phenylenediamine (PPD 2.0%), Resorcinol, Sodium Sulfite, Erythorbic Acid, EDTA, Fragrance, Coconut Oil"
+    },
+    {
+        "name": "Whitening Skin Lightening Soap",
+        "brand": "Glow Secret",
+        "category": "Cosmetics",
+        "ingredients_text": "Sodium Palmate, Sodium Palm Kernelate, Aqua, Glycerin, Mercury, Fragrance, Titanium Dioxide, Tetrasodium EDTA"
+    },
+    {
+        "name": "Gentle Hydrating Daily Moisturizer",
+        "brand": "Pure Earth",
+        "category": "Personal Care",
+        "ingredients_text": "Aqua, Glycerin, Aloe Vera Extract, Shea Butter, Squalane, Tocopherol, Sodium Hyaluronate, Citric Acid"
+    },
+]
+
+
 def seed_database(db: Session, force: bool = False):
     """
     Seeds the database with initial FSSAI/CDSCO chemicals and demo products.
@@ -275,6 +353,7 @@ def seed_database(db: Session, force: bool = False):
     if force:
         db.query(models.Chemical).delete()
         db.query(models.Product).delete()
+        db.query(models.CatalogProduct).delete()
         db.commit()
 
     # 2. Check if chemicals already exist (only seed if empty)
@@ -300,3 +379,15 @@ def seed_database(db: Session, force: bool = False):
         print(f"Successfully seeded {len(INITIAL_PRODUCTS)} products.")
     else:
         print(f"Products table already has {existing_products_count} items. Skipping product seeding.")
+
+    # 4. Check if catalog products already exist (reference product->ingredients map)
+    existing_catalog_count = db.query(models.CatalogProduct).count()
+    if existing_catalog_count == 0:
+        print("Seeding product catalog...")
+        for cat_data in INITIAL_CATALOG:
+            db_cat = models.CatalogProduct(**cat_data)
+            db.add(db_cat)
+        db.commit()
+        print(f"Successfully seeded {len(INITIAL_CATALOG)} catalog products.")
+    else:
+        print(f"Catalog already has {existing_catalog_count} items. Skipping catalog seeding.")
